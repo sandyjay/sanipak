@@ -1,24 +1,20 @@
-import logo from './logo.svg';
-import './App.css';
+import Login from "./pages/Login.tsx";
+import Dashboard from "./pages/Dashboard.js";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import BIRecords from "./pages/BIRecords.js";
+import TrainingMaterials from "./pages/TrainingMaterials.js";
+import "./App.css";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path='/' element={<Login to='/login' replace />} />
+        <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/bi-records' element={<BIRecords />} />
+        <Route path='/training-materials' element={<TrainingMaterials />} />
+      </Routes>
+    </Router>
   );
 }
 
