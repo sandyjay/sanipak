@@ -5,7 +5,7 @@ import ActionCard from "./components/ActionCard.tsx";
 import PageHeader from "./components/PageHeader.tsx";
 import Footer from "./components/Footer.tsx";
 
-export default function Album() {
+export default function Dashboard() {
   return (
     <>
       <div className='page-dashboard'>

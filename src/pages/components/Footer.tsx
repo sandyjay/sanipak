@@ -5,8 +5,7 @@ import { Typography } from "@mui/material";
 function Copyright() {
   return (
     <Typography variant='body2' align='center'>
-      © San-I-Pak World Health Systems 2022 All rights reserved | Designed by
-      THECLAYMEDIA
+      © San-I-Pak World Health Systems 2022 All rights reserved
     </Typography>
   );
 }
