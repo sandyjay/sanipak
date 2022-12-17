@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import logo from "../assets/logo.png";
 import {
   Button,
@@ -11,16 +11,7 @@ import {
   Container,
 } from "@mui/material";
 
-export default function SignIn() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
-  };
-
+export default function Login() {
   return (
     <>
       <Container
@@ -41,12 +32,7 @@ export default function SignIn() {
         >
           <img src={logo} alt='logo' />
 
-          <Box
-            component='form'
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{ mt: 3 }}
-          >
+          <Box component='form' noValidate sx={{ mt: 3 }}>
             <TextField
               margin='normal'
               required
@@ -56,6 +42,7 @@ export default function SignIn() {
               name='email'
               autoComplete='email'
               autoFocus
+              onChange={(event) => setRegisterEmail(event.target.value)}
             />
             <TextField
               margin='normal'
@@ -66,6 +53,7 @@ export default function SignIn() {
               type='password'
               id='password'
               autoComplete='current-password'
+              onChange={(event) => setRegisterPass(event.target.value)}
             />
             <FormControlLabel
               control={<Checkbox value='remember' color='primary' />}
