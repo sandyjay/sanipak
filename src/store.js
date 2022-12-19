@@ -19,7 +19,6 @@ export const authReducer = (state = initialState, action) => {
         case actionTypes.AUTH_SUCCESS:
             const { user } = action.payload
             localStorage.setItem('auth', JSON.stringify(user))
-            console.log('iserure', user)
             return { ...state, isLoading: false, user }
         case actionTypes.LOGOUT_SUCCESS:
             return { ...initialState }

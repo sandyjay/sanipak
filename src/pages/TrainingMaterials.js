@@ -14,6 +14,7 @@ import {
   DialogTitle,
   Dialog,
   Box,
+  CircularProgress,
 } from "@mui/material";
 import VideoThumbnail from "react-video-thumbnail";
 import {
@@ -27,6 +28,16 @@ import ResponsiveAppBar from "./components/ResponsiveAppBar.js";
 import PageHeader from "./components/PageHeader.tsx";
 import Footer from "./components/Footer.tsx";
 import storage from "./s.js";
+import { realtimedb } from "../db.js";
+import {
+  ref as dbref,
+  get,
+  query,
+  orderByChild,
+  equalTo,
+  limitToFirst,
+} from "firebase/database";
+import { useStore } from "../store.js";
 
 const storages = getStorage();
 
@@ -34,6 +45,8 @@ const storages = getStorage();
 const listRef = ref(storages, "");
 
 export default function TrainingMaterials() {
+  const [{ user }, dispatch] = useStore();
+
   const [percent, setPercent] = React.useState('');
   const [videos, setVideos] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
@@ -74,54 +87,67 @@ export default function TrainingMaterials() {
     })();
   }, []);
 
+
   const upload = async (e) => {
+    setUploading(true);
     try {
       if (!e.target.files[0]) {
         alert("Please choose a file first!");
       }
-      setUploading(true);
-      const storageRef = ref(storage, `/${e.target.files[0].name}`);
-      const uploadTask = uploadBytesResumable(storageRef, e.target.files[0]);
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const percnt = Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          );
-
-          setPercent(percnt);
-        },
-        (err) => {
-          Swal.fire({
-            title: "Error!",
-            text: err || "Something went wrong",
-            icon: "error",
-            timerProgressBar: true,
-            showConfirmButton: true,
-            confirmButtonColor: "#3699FF",
-          });
-        },
-        () => {
-          // download url
-          getDownloadURL(uploadTask.snapshot.ref)
-            .then((url) => {
-              setVideos([url, ...videos]);
-            })
-            .catch((e) => {
-              Swal.fire({
-                title: "Error!",
-                text: e || "Something went wrong",
-                icon: "error",
-                timerProgressBar: true,
-                showConfirmButton: true,
-                confirmButtonColor: "#3699FF",
-              });
-            })
-            .finally(() => {
-              setUploading(false);
-            });
-        }
+      let arr = []
+      let featuresRef = query(
+        dbref(realtimedb, "users"),
+        orderByChild("userId"),
+        limitToFirst(1),
+        equalTo(user.localId)
       );
+      get(featuresRef)
+        .then((r) => {
+          console.log('r')
+          r.forEach(v => {
+            arr.push(v.toJSON())
+          })
+          console.log('arr', arr[0])
+          if (arr[0].isAdmin) {
+            const storageRef = ref(storage, `/${Math.random() + e.target.files[0].name}`);
+            const uploadTask = uploadBytesResumable(storageRef, e.target.files[0]);
+            uploadTask.on(
+              "state_changed",
+              (snapshot) => {
+                const percnt = Math.round(
+                  (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                );
+                setPercent(percnt);
+              },
+              (err) => {
+                throw err
+              },
+              async () => {
+                try {
+                  const url = await getDownloadURL(uploadTask.snapshot.ref)
+                  setVideos([url, ...videos]);
+                  document.getElementById("images").value = "";
+                } catch (e) {
+                  throw e
+                } finally { setUploading(false) }
+              }
+            );
+          } else {
+            setUploading(false)
+            Swal.fire({
+              title: "Error!",
+              text: "Only admin can upload video.",
+              icon: "error",
+              timerProgressBar: true,
+              showConfirmButton: true,
+              confirmButtonColor: "#3699FF",
+            });
+          }
+        })
+        .catch((e) => {
+          console.log('eeeee------------->', e)
+          throw e;
+        });
     } catch (error) {
       Swal.fire({
         title: "Error!",
@@ -131,8 +157,69 @@ export default function TrainingMaterials() {
         showConfirmButton: true,
         confirmButtonColor: "#3699FF",
       });
+      document.getElementById("images").value = "";
     }
   };
+
+  // const uploads = async (e) => {
+  //   try {
+  //     if (!e.target.files[0]) {
+  //       alert("Please choose a file first!");
+  //     }
+  //     setUploading(true);
+  //     const storageRef = ref(storage, `/${Math.trunc((Math.random() * 99999999999)) + '__' + e.target.files[0].name}`);
+  //     const uploadTask = uploadBytesResumable(storageRef, e.target.files[0]);
+  //     uploadTask.on(
+  //       "state_changed",
+  //       (snapshot) => {
+
+  //         const percnt = Math.round(
+  //           (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+  //         );
+
+  //         setPercent(percnt);
+  //       },
+  //       (err) => {
+  //         Swal.fire({
+  //           title: "Error!",
+  //           text: err || "Something went wrong",
+  //           icon: "error",
+  //           timerProgressBar: true,
+  //           showConfirmButton: true,
+  //           confirmButtonColor: "#3699FF",
+  //         });
+  //       },
+  //       () => {
+  //         getDownloadURL(uploadTask.snapshot.ref)
+  //           .then((url) => {
+  //             setVideos([url, ...videos]);
+  //           })
+  //           .catch((e) => {
+  //             Swal.fire({
+  //               title: "Error!",
+  //               text: e || "Something went wrong",
+  //               icon: "error",
+  //               timerProgressBar: true,
+  //               showConfirmButton: true,
+  //               confirmButtonColor: "#3699FF",
+  //             });
+  //           })
+  //           .finally(() => {
+  //             setUploading(false);
+  //           });
+  //       }
+  //     );
+  //   } catch (error) {
+  //     Swal.fire({
+  //       title: "Error!",
+  //       text: error || "Something went wrong",
+  //       icon: "error",
+  //       timerProgressBar: true,
+  //       showConfirmButton: true,
+  //       confirmButtonColor: "#3699FF",
+  //     });
+  //   }
+  // };
 
   return (
     <>
@@ -141,19 +228,20 @@ export default function TrainingMaterials() {
         <PageHeader heading="Training Materials" />
         <main>
           <Container sx={{ py: 8 }} maxWidth="lg">
-            <div style={{ marginBottom: '20px', display: 'flex' }}> <input
-              id="images"
-              name="images"
-              type="file"
-              multiple={false}
-              onChange={upload}
-              style={{ display: "none" }}
-            />{" "}
-              <label className="lbl"
-                style={{ pointerEvents: uploading ? 'none' : 'unset' }}
-                variant="contained" for="images">
-                Upload video
-              </label>
+            <div style={{ marginBottom: '20px', display: 'flex' }}>
+              {user.isAdmin ? <> <input
+                id="images"
+                name="images"
+                type="file"
+                multiple={false}
+                onChange={upload}
+                style={{ display: "none" }}
+              />
+                <label className="lbl"
+                  style={{ pointerEvents: uploading ? 'none' : 'unset' }}
+                  variant="contained" htmlFor="images">
+                  {uploading ? <CircularProgress className="" size={30} color='primary' /> : "Upload video"}
+                </label></> : null}
               {/* <p>{percent}</p> */}
             </div>
             {/* End hero unit */}

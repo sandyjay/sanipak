@@ -180,6 +180,9 @@
   border-radius: 5px;
   position: relative;
   background-color: lightgray;
+  display: flex;
+  justify-content: center;
+  min-width: 90px;
 }
 .err {
   color: red;

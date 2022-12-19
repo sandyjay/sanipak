@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import logo from "../assets/logo.png";
 import Swal from "sweetalert2";
 import { realtimedb } from "../db.js";
 import {
   ref,
-  set,
-  update,
   get,
   query,
   orderByChild,
   equalTo,
+  limitToFirst,
 } from "firebase/database";
 import {
   Button,
@@ -67,6 +66,7 @@ function Login() {
         let featuresRef = query(
           ref(realtimedb, "users"),
           orderByChild("userId"),
+          limitToFirst(1),
           equalTo(data.localId)
         );
         get(featuresRef)
@@ -76,6 +76,7 @@ function Login() {
               arr.push(v.toJSON())
             })
             dispatch({ type: AUTH_SUCCESS, payload: { user: { ...data, ...arr[0] } } });
+            setIsLoading(false);
             navigate("/dashboard");
           })
           .catch((e) => {
@@ -83,6 +84,7 @@ function Login() {
           });
       }
     } catch (error) {
+      setIsLoading(false);
       Swal.fire({
         title: "Error!",
         text: error || "Something went wrong",
@@ -91,8 +93,6 @@ function Login() {
         showConfirmButton: true,
         confirmButtonColor: "#3699FF",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 

@@ -38,6 +38,9 @@ export default function BIRecords() {
         setIsLoading(false);
         setRecords(arr)
       })
+        .catch(e => {
+          throw e
+        })
     } catch (error) {
       Swal.fire({
         text: error?.message || "Something Went wrong",
@@ -61,7 +64,6 @@ export default function BIRecords() {
       ids.forEach(async v => {
         await remove(ref(realtimedb, `records/${v}`));
       })
-      // console.log('onDelete-----', records.filter(v => !ids.includes(v.id)))
       setRecords(records.filter(v => !ids.includes(v.id)))
     } catch (error) {
       Swal.fire({
@@ -77,10 +79,9 @@ export default function BIRecords() {
       setUpdating(false)
     }
   }
-  // console.log('records', records)
 
   const onSubmit = async (values) => {
-    console.log('onSubmit');
+    // console.log('onSubmit');
     try {
       setUpdating(true);
       const data = await push(ref(realtimedb, 'records/'), {

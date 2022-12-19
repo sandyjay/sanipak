@@ -18,5 +18,4 @@ export const app = initializeApp({
 
 const storage = getStorage(app);
 
-// export const db = firebase.firestore();
 export default storage;
