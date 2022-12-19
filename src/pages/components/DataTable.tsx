@@ -1,5 +1,7 @@
 import * as React from "react";
 import { alpha } from "@mui/material/styles";
+import moment from "moment";
+
 import {
   Box,
   Table,
@@ -16,6 +18,7 @@ import {
   Checkbox,
   IconButton,
   Tooltip,
+  CircularProgress,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
@@ -34,261 +37,47 @@ interface Data {
   result: string;
 }
 
-function createData(
-  date: string,
-  lot: string,
-  version: string,
-  temp: string,
-  timein: string,
-  timeout: string,
-  color: string,
-  result: string
-): Data {
-  return {
-    date,
-    lot,
-    version,
-    temp,
-    timein,
-    timeout,
-    color,
-    result,
-  };
-}
 
-const rows = [
-  createData(
-    "May 25, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-  createData(
-    "May 24, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-  createData(
-    "May 23, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-  createData(
-    "May 22, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-  createData(
-    "May 21, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-  createData(
-    "May 20, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-  createData(
-    "May 19, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-  createData(
-    "May 18, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-  createData(
-    "May 17, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-  createData(
-    "May 16, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-  createData(
-    "May 15, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-  createData(
-    "May 14, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-  createData(
-    "May 13, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-  createData(
-    "May 12, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-  createData(
-    "May 11, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-  createData(
-    "May 10, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-  createData(
-    "May 09, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-  createData(
-    "May 08, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-  createData(
-    "May 07, 2022",
-    "BE345",
-    "test",
-    "70",
-    "May 25, 2022 07:30",
-    "May 25, 2022 18:54",
-    "Black",
-    "Pass"
-  ),
-];
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
+// function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
+//   if (b[orderBy] < a[orderBy]) {
+//     return -1;
+//   }
+//   if (b[orderBy] > a[orderBy]) {
+//     return 1;
+//   }
+//   return 0;
+// }
 
 type Order = "asc" | "desc";
 
-function getComparator<Key extends keyof any>(
-  order: Order,
-  orderBy: Key
-): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string }
-) => number {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
+// function getComparator<Key extends keyof any>(
+//   order: Order,
+//   orderBy: Key
+// ): (
+//   a: { [key in Key]: number | string },
+//   b: { [key in Key]: number | string }
+// ) => number {
+//   return order === "desc"
+//     ? (a, b) => descendingComparator(a, b, orderBy)
+//     : (a, b) => -descendingComparator(a, b, orderBy);
+// }
 
 // This method is created for cross-browser compatibility, if you don't
 // need to support IE11, you can use Array.prototype.sort() directly
-function stableSort<T>(
-  array: readonly T[],
-  comparator: (a: T, b: T) => number
-) {
-  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
+// function stableSort<T>(
+//   array: readonly T[],
+//   comparator: (a: T, b: T) => number
+// ) {
+//   const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
+//   stabilizedThis.sort((a, b) => {
+//     const order = comparator(a[0], b[0]);
+//     if (order !== 0) {
+//       return order;
+//     }
+//     return a[1] - b[1];
+//   });
+//   return stabilizedThis.map((el) => el[0]);
+// }
 
 interface HeadCell {
   disablePadding: boolean;
@@ -346,6 +135,12 @@ const headCells: readonly HeadCell[] = [
     disablePadding: false,
     label: "Result",
   },
+  {
+    id: "action",
+    numeric: true,
+    disablePadding: false,
+    label: "Action",
+  }
 ];
 
 interface EnhancedTableProps {
@@ -369,18 +164,18 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     rowCount,
     onRequestSort,
   } = props;
-  const createSortHandler = (property: keyof Data) => (
-    event: React.MouseEvent<unknown>
-  ) => {
-    onRequestSort(event, property);
-  };
+  
+  const createSortHandler =
+    (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+      onRequestSort(event, property);
+    };
 
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding='checkbox'>
+        <TableCell padding="checkbox">
           <Checkbox
-            color='primary'
+            color="primary"
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
@@ -403,7 +198,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             >
               {headCell.label}
               {orderBy === headCell.id ? (
-                <Box component='span' sx={visuallyHidden}>
+                <Box component="span" sx={visuallyHidden}>
                   {order === "desc" ? "sorted descending" : "sorted ascending"}
                 </Box>
               ) : null}
@@ -417,10 +212,11 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
 interface EnhancedTableToolbarProps {
   numSelected: number;
+  onDelete: any;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-  const { numSelected } = props;
+  const { numSelected, onDelete } = props;
 
   return (
     <Toolbar
@@ -439,42 +235,42 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
       {numSelected > 0 ? (
         <Typography
           sx={{ flex: "1 1 100%" }}
-          color='inherit'
-          variant='subtitle1'
-          component='div'
+          color="inherit"
+          variant="subtitle1"
+          component="div"
         >
           {numSelected} selected
         </Typography>
       ) : (
         <Typography
           sx={{ flex: "1 1 100%" }}
-          variant='h6'
-          id='tableTitle'
-          component='div'
+          variant="h6"
+          id="tableTitle"
+          component="div"
         >
           All Records
         </Typography>
       )}
       {numSelected > 0 ? (
         <>
-          <Tooltip title='Export'>
+          <Tooltip title="Export">
             <IconButton>
               <IosShareIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip title='Edit'>
+          {/* <Tooltip title="Edit">
             <IconButton>
               <EditIcon />
             </IconButton>
-          </Tooltip>
-          <Tooltip title='Delete'>
-            <IconButton>
+          </Tooltip> */}
+          <Tooltip title="Delete">
+            <IconButton onClick={onDelete}>
               <DeleteIcon />
             </IconButton>
           </Tooltip>
         </>
       ) : (
-        <Tooltip title='Filter list'>
+        <Tooltip title="Filter list">
           <IconButton>
             <FilterListIcon />
           </IconButton>
@@ -484,7 +280,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
   );
 };
 
-export default function DataTable() {
+export default function DataTable({ data, isLoading, onDelete, setEditRow }: any) {
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("date");
   const [selected, setSelected] = React.useState<readonly string[]>([]);
@@ -502,7 +298,7 @@ export default function DataTable() {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.date);
+      const newSelected = data.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
@@ -525,7 +321,6 @@ export default function DataTable() {
         selected.slice(selectedIndex + 1)
       );
     }
-
     setSelected(newSelected);
   };
 
@@ -544,72 +339,91 @@ export default function DataTable() {
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar numSelected={selected.length} onDelete={() => onDelete(selected)} />
         <TableContainer>
-          <Table
-            sx={{ minWidth: 750 }}
-            aria-labelledby='tableTitle'
-            size='medium'
-          >
+          <Table sx={{
+            minWidth: 750, minHeight: "200px",
+            position: 'relative'
+          }} size="medium">
             <EnhancedTableHead
               numSelected={selected.length}
               order={order}
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={rows.length}
+              rowCount={data.length}
             />
             <TableBody>
-              {/* if you don't need to support IE11, you can replace the `stableSort` call with:
-              rows.slice().sort(getComparator(order, orderBy)) */}
-              {stableSort(rows, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const isItemSelected = isSelected(row.date);
-                  const labelId = `enhanced-table-checkbox-${index}`;
-
-                  return (
-                    <TableRow
-                      hover
-                      onClick={(event) => handleClick(event, row.date)}
-                      role='checkbox'
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row.date}
-                      selected={isItemSelected}
-                    >
-                      <TableCell padding='checkbox'>
-                        <Checkbox
-                          color='primary'
-                          checked={isItemSelected}
-                          inputProps={{
-                            "aria-labelledby": labelId,
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        scope='row'
-                        padding='none'
+              {
+                !isLoading ? (
+                  data.map((row, index) => {
+                    const isItemSelected = isSelected(row.id);
+                    const labelId = `enhanced-table-checkbox-${index}`;
+                    return (
+                      <TableRow
+                        hover
+                        onClick={(event) => handleClick(event, row.id)}
+                        role="checkbox"
+                        aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        key={index}
+                        selected={isItemSelected}
                       >
-                        {row.date}
-                      </TableCell>
-                      <TableCell align='right'>{row.lot}</TableCell>
-                      <TableCell align='right'>{row.version}</TableCell>
-                      <TableCell align='right'>{row.temp}</TableCell>
-                      <TableCell align='right'>{row.timein}</TableCell>
-                      <TableCell align='right'>{row.timeout}</TableCell>
-                      <TableCell align='right'>{row.color}</TableCell>
-                      <TableCell align='right'>{row.result}</TableCell>
-                    </TableRow>
-                  );
-                })}
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            color="primary"
+                            checked={isItemSelected}
+                            inputProps={{
+                              "aria-labelledby": labelId,
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell
+                          component="th"
+                          id={labelId}
+                          scope="row"
+                          padding="none"
+                        >
+                          {moment(row.date).format("MMMM Do YYYY, h:mm a")}
+                        </TableCell>
+                        <TableCell align="right">{row.bi_lot}</TableCell>
+                        <TableCell align="right">{row.version}</TableCell>
+                        <TableCell align="right">{row.temp}</TableCell>
+                        <TableCell align="right">
+                          {moment(row.timein).format("MMMM Do YYYY, h:mm a")}
+                        </TableCell>
+                        <TableCell align="right">
+                          {moment(row.timeout).format("MMMM Do YYYY, h:mm a")}
+                        </TableCell>
+                        <TableCell align="right">{row.color}</TableCell>
+                        <TableCell align="right">{row.result}</TableCell>
+                        <TableCell align="right"><Tooltip title="Edit">
+                          <IconButton onClick={(e) => {
+                            e.stopPropagation()
+                            setEditRow(row)
+                          }}>
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip></TableCell>
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <CircularProgress
+                    color="primary"
+                    style={{
+                      position: "absolute",
+                      left: "50%",
+                      top: "50%",
+                    }}
+                    className="m-auto"
+                  />
+                )
+              }
               {emptyRows > 0 && (
                 <TableRow
                   style={{
@@ -624,8 +438,8 @@ export default function DataTable() {
         </TableContainer>
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
-          component='div'
-          count={rows.length}
+          component="div"
+          count={data.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

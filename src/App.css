@@ -162,3 +162,26 @@
   border: 1px solid #ddd;
   box-shadow: none;
 }
+.video {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.p-auto {
+  padding: auto;
+}
+.m-auto {
+  margin: auto;
+}
+.lbl {
+  margin-bottom: 10px !important;
+  padding-bottom: 10px !important;
+  padding: 10px;
+  border-radius: 5px;
+  position: relative;
+  background-color: lightgray;
+}
+.err {
+  color: red;
+  margin-right: 10px;
+}

@@ -14,16 +14,21 @@ import {
 } from "@mui/material";
 import logo from "../../assets/logo.png";
 import MenuIcon from "@mui/icons-material/Menu";
+import { useNavigate } from "react-router-dom";
+import { useStore } from "../../store";
+import { AUTH_SUCCESS } from "../../actionTypes";
 
 const settings = ["Profile", "Logout"];
 
 const ResponsiveAppBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-
+  const nav = useNavigate();
+  const [{ user }, dispatch] = useStore();
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -37,14 +42,14 @@ const ResponsiveAppBar = () => {
   };
 
   return (
-    <AppBar position='static' className='appbar'>
-      <Container maxWidth='lg'>
+    <AppBar position="static" className="appbar">
+      <Container maxWidth="lg">
         <Toolbar disableGutters>
           <Typography
-            variant='h6'
+            variant="h6"
             noWrap
-            component='a'
-            href='/'
+            component="a"
+            href="/"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -55,21 +60,21 @@ const ResponsiveAppBar = () => {
               textDecoration: "none",
             }}
           >
-            <img src={logo} className='App-logo' alt='logo' />
+            <img src={logo} className="App-logo" alt="logo" />
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
-              size='large'
-              aria-label='account of current user'
-              aria-controls='menu-appbar'
-              aria-haspopup='true'
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
               onClick={handleOpenNavMenu}
-              color='inherit'
+              color="inherit"
             >
               <Menu />
             </IconButton>
             <Menu
-              id='menu-appbar'
+              id="menu-appbar"
               anchorEl={anchorElNav}
               anchorOrigin={{
                 vertical: "bottom",
@@ -80,22 +85,22 @@ const ResponsiveAppBar = () => {
                 vertical: "top",
                 horizontal: "left",
               }}
-              open={Boolean(anchorElNav)}
+              open={!!Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{
                 display: { xs: "block", md: "none" },
               }}
             >
               <MenuItem onClick={handleCloseNavMenu}>
-                <Typography textAlign='center'>Home</Typography>
+                <Typography textAlign="center">Home</Typography>
               </MenuItem>
             </Menu>
           </Box>
           <Typography
-            variant='h5'
+            variant="h5"
             noWrap
-            component='a'
-            href=''
+            component="a"
+            href=""
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
@@ -118,39 +123,40 @@ const ResponsiveAppBar = () => {
             }}
           >
             <Button
-              href={"/dashboard"}
+              onClick={() => nav("/dashboard")}
               sx={{ my: 2, color: "white", display: "block" }}
             >
               Home
             </Button>
             <Button
-              href={"https://records.sanipak.com/drweb/login.aspx"}
+              // href={"https://records.sanipak.com/drweb/login.aspx"}
+              // onClick={() => nav("/bi-records")}
               sx={{ my: 2, color: "white", display: "block" }}
             >
               Cycles Record
             </Button>
             <Button
-              href={"/bi-records"}
+              onClick={() => nav("/bi-records")}
               sx={{ my: 2, color: "white", display: "block" }}
             >
               BI Records
             </Button>
             <Button
-              href={"/training-materials"}
+              onClick={() => nav("/training-materials")}
               sx={{ my: 2, color: "white", display: "block" }}
             >
               Training Materials
             </Button>
           </Box>
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title='Open settings'>
+            <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt='Remy Sharp'>SJ</Avatar>
+                <Avatar alt="Remy Sharp">SJ</Avatar>
               </IconButton>
             </Tooltip>
             <Menu
               sx={{ mt: "45px" }}
-              id='menu-appbar'
+              id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
                 vertical: "top",
@@ -165,8 +171,14 @@ const ResponsiveAppBar = () => {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography href='/' textAlign='center'>
+                <MenuItem key={setting} onClick={() => {
+                  if (setting == 'Logout') {
+                    localStorage.clear()
+                    dispatch({ type: AUTH_SUCCESS, payload: { user: null } })
+                  }
+                  handleCloseUserMenu()
+                }}>
+                  <Typography href="/" textAlign="center">
                     {setting}
                   </Typography>
                 </MenuItem>

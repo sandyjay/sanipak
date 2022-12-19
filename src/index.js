@@ -3,11 +3,15 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import { initialState, authReducer, Provider } from "./store";
+
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.Fragment>
-    <App />
+    <Provider initialState={initialState} reducer={authReducer}>
+      <App />
+    </Provider>
   </React.Fragment>
 );
 
