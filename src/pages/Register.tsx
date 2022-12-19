@@ -13,6 +13,8 @@ import {
   Box,
   Container,
   CircularProgress,
+  Radio,
+  RadioGroup,
 } from "@mui/material";
 import { useStore } from "../store";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -29,17 +31,19 @@ function Register() {
   const auth = !!user?.idToken
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
-  const [inputValues, setInputs] = useState({
+  const [inputValues, setInputValues] = useState({
     email: '',
-    password: ''
+    password: '',
+    name: '',
+    isAdmin: false
   })
 
-  const change = (e) => setInputs({ ...inputValues, [e.target.name || e.target.id]: e.target.value })
+  const change = (e) => setInputValues({ ...inputValues, [e.target.name || e.target.id]: e.target.value })
 
   const onsubmit = async () => {
     setIsLoading(true)
     try {
-      const { email, password } = inputValues;
+      const { email, password, name, isAdmin } = inputValues;
       const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${process.env.REACT_APP_FIREBASE_KEY}`, {
         method: 'POST',
         headers: {
@@ -57,8 +61,13 @@ function Register() {
       }
       await push(ref(realtimedb, 'users/'), {
         email,
-        isAdmin: false,
-        userId: data.localId
+        isAdmin: !!(isAdmin === 'admin'),
+        isSpecialUser: !(isAdmin === 'admin'),
+        userId: data.localId, // generetad by firebase
+        name,
+        password,
+        facility: '',
+        internalId: ''
       });
       dispatch({ type: AUTH_SUCCESS, payload: { user: data } })
       navigate('/dashboard')
@@ -103,7 +112,18 @@ function Register() {
           <img src={logo} alt='logo' />
 
           <Box component='form' noValidate sx={{ mt: 3 }}>
+
             <TextField
+              margin='normal'
+              required
+              fullWidth
+              id='name'
+              label='Full Name'
+              name='name'
+              autoFocus
+              value={inputValues.name}
+              onChange={change}
+            /> <TextField
               margin='normal'
               required
               fullWidth
@@ -127,6 +147,24 @@ function Register() {
               value={inputValues.password}
               onChange={change}
             />
+            <RadioGroup
+              row
+              name="isAdmin"
+              id="isAdmin"
+              value={inputValues.isAdmin}
+              onChange={change}
+            >
+              <FormControlLabel
+                value="admin"
+                control={<Radio />}
+                label="Admin user"
+              />
+              <FormControlLabel
+                value="specific"
+                control={<Radio />}
+                label="Specific user"
+              />
+            </RadioGroup>
             <FormControlLabel
               control={<Checkbox value='remember' color='primary' />}
               label='Remember me'

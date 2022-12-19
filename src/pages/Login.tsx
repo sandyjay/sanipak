@@ -177,7 +177,6 @@ function Login() {
               </Grid>
               <Grid item>
                 <Link variant="body2">
-                  {/* target='_blank'  */}
                   <a href="mailto:sj@m.co">
                     Don't have an account? Request one.
                   </a>
@@ -192,3 +191,13 @@ function Login() {
 }
 
 export default Login;
+ 
+// On training materials page:
+
+
+// You can ask them all on registration form on /register route. Email, password and isAdmin will be mandatory and everything else will be optional and can be stored as "" or null
+
+// On Training materials page:
+
+// There are no thumbnails. If its hard to get the thumbnails from video, you can also ask user to upload a custom thumbnail.
+

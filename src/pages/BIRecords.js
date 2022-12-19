@@ -12,7 +12,7 @@ import DataTable from "./components/DataTable.tsx";
 import { realtimedb } from "../db.js";
 import {
   ref,
-  set, update, get,
+  set, get,
   remove, push, orderByChild, equalTo
   , query,
 } from "firebase/database";
@@ -29,7 +29,14 @@ export default function BIRecords() {
 
   const fetchHandler = async () => {
     try {
-      let featuresRef = query(ref(realtimedb, 'records'), orderByChild('userId'), equalTo(user.localId))
+      let featuresRef = null;
+      if (user.isAdmin) {
+        console.log('iasadmin')
+        featuresRef = query(ref(realtimedb, 'records'))
+      }
+      else {
+        featuresRef = query(ref(realtimedb, 'records'), orderByChild('userId'), equalTo(user.localId))
+      }
       let arr = []
       get(featuresRef).then(r => {
         r.forEach(v => {
@@ -81,7 +88,6 @@ export default function BIRecords() {
   }
 
   const onSubmit = async (values) => {
-    // console.log('onSubmit');
     try {
       setUpdating(true);
       const data = await push(ref(realtimedb, 'records/'), {

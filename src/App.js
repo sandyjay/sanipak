@@ -9,7 +9,7 @@ import BIRecords from "./pages/BIRecords.js";
 import Dashboard from "./pages/Dashboard.js";
 import Login from "./pages/Login.tsx";
 import Register from "./pages/Register.tsx";
-import TrainingMaterials from "./pages/TrainingMaterials.js";
+import TrainingMaterials from "./pages/TrainingMaterials.tsx";
 import AdminPage from "./pages/AdminPage.js";
 import { useStore } from "./store";
 
