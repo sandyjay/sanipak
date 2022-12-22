@@ -86,6 +86,7 @@ export default function BIRecords() {
   }
 
   const onSubmit = async (values) => {
+    console.log('user.isAdmin', user.isAdmin);
     try {
       setUpdating(true);
       const data = await push(ref(realtimedb, 'records/'), {
@@ -93,7 +94,9 @@ export default function BIRecords() {
         date: moment(values.date).format(),
         timein: moment(values.timein).format(),
         timeout: moment(values.timeout).format(),
-        userId: user.localId
+        userId: user.localId,
+        isAdmin: user.isAdmin,
+        createdBy: user.email
       });
       setRecords(p => [{ id: data.key, ...values }, ...p])
     } catch (error) {

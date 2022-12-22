@@ -35,6 +35,7 @@ interface Data {
   timeout: string;
   color: string;
   result: string;
+  createdBy: string;
 }
 
 
@@ -96,6 +97,12 @@ const headCells: readonly HeadCell[] = [
     numeric: true,
     disablePadding: false,
     label: "Result",
+  },
+  {
+    id: "createdBy",
+    numeric: true,
+    disablePadding: false,
+    label: "Created by",
   },
   {
     id: "action",
@@ -363,6 +370,7 @@ export default function DataTable({ data, isLoading, onDelete, setEditRow }: any
                         </TableCell>
                         <TableCell align="right">{row.color}</TableCell>
                         <TableCell align="right">{row.result}</TableCell>
+                        <TableCell align="right">{row.isAdmin ? row.createdBy : ''}</TableCell>
                         <TableCell align="right"><Tooltip title="Edit">
                           <IconButton onClick={(e) => {
                             e.stopPropagation()
