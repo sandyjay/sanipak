@@ -1,6 +1,6 @@
 import * as React from "react";
 import Swal from "sweetalert2";
-import moment from "moment";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import {
   Fab,
@@ -16,17 +16,11 @@ import {
   DialogTitle,
   Dialog,
   Box,
-  CircularProgress,
   CardMedia,
+  IconButton,
 } from "@mui/material";
 import VideoThumbnail from "react-video-thumbnail";
-// import {
-//   getDownloadURL,
-//   getStorage,
-//   listAll,
-//   ref,
-//   uploadBytesResumable,
-// } from "firebase/storage";
+
 import ResponsiveAppBar from "./components/ResponsiveAppBar.js";
 import PageHeader from "./components/PageHeader.tsx";
 import Footer from "./components/Footer.tsx";
@@ -38,20 +32,20 @@ import {
   get,
   query,
   push,
+  remove,
+  ref,
 } from "firebase/database";
 import { useStore } from "../store.js";
 
-// const storages = getStorage();
 
-// Create a reference under which you want to list
-// const listRef = ref(storages, "");
 
 export default function TrainingMaterials() {
   const [{ user }] = useStore();
   const [open, setOpen] = React.useState(false);
+  const [deleteOpen, setDeleteOpen] = React.useState(null);
   const [videos, setVideos] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
   const [show, setshow] = React.useState(null);
+
 
   React.useEffect(() => {
     (async () => {
@@ -61,21 +55,14 @@ export default function TrainingMaterials() {
           .then((r) => {
             let arr = []
             r.forEach(v => {
-              arr.push(v.toJSON())
+              arr.push({ id: v.key, ...v.toJSON() })
             })
             setVideos(arr);
           })
           .catch((e) => {
             throw e;
           });
-        // const itemsrefs = await listAll(listRef);
-        // itemsrefs.items.forEach(async (item) => {
-        //   try {
-        //     const url = await getDownloadURL(item);
-        //     setVideos((arr) => [...arr, url]);
-        //   } catch (error) {
-        //   }
-        // });
+
       } catch (error) {
         Swal.fire({
           text: error?.message || "Something Went wrong",
@@ -85,95 +72,29 @@ export default function TrainingMaterials() {
           showConfirmButton: true,
           confirmButtonColor: "#3699FF",
         });
-      } finally {
-        setLoading(false);
       }
     })();
   }, []);
 
-  // const upload = async (e) => {
-  //   setUploading(true);
-  //   try {
-  //     if (!e.target.files[0]) {
-  //       alert("Please choose a file first!");
-  //     }
-  //     let arr = [];
-  //     let featuresRef = query(
-  //       dbref(realtimedb, "users"),
-  //       orderByChild("userId"),
-  //       limitToFirst(1),
-  //       equalTo(user.localId)
-  //     );
-  //     get(featuresRef)
-  //       .then((r) => {
-  //         console.log("r");
-  //         r.forEach((v) => {
-  //           arr.push(v.toJSON());
-  //         });
-  //         console.log("arr", arr[0]);
-  //         if (arr[0]?.isAdmin) {
-  //           const storageRef = ref(
-  //             storage,
-  //             `/${Math.random() + e.target.files[0].name}`
-  //           );
-  //           const uploadTask = uploadBytesResumable(
-  //             storageRef,
-  //             e.target.files[0]
-  //           );
-  //           uploadTask.on(
-  //             "state_changed",
-  //             (snapshot) => {
-  //               const percnt =
-  //                 Math.round(
-  //                   (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-  //                 ) || 0;
-  //               setPercent(percnt);
-  //             },
-  //             (err) => {
-  //               throw err;
-  //             },
-  //             async () => {
-  //               try {
-  //                 const url = await getDownloadURL(uploadTask.snapshot.ref);
-  //                 setVideos([url, ...videos]);
-  //                 document.getElementById("images").value = "";
-  //               } catch (e) {
-  //                 throw e;
-  //               } finally {
-  //                 setUploading(false);
-  //               }
-  //             }
-  //           );
-  //         } else {
-  //           setUploading(false);
-  //           Swal.fire({
-  //             title: "Error!",
-  //             text: "Only admin can upload video.",
-  //             icon: "error",
-  //             timerProgressBar: true,
-  //             showConfirmButton: true,
-  //             confirmButtonColor: "#3699FF",
-  //           });
-  //         }
-  //       })
-  //       .catch((e) => {
-  //         throw e;
-  //       });
-  //   } catch (error) {
-  //     Swal.fire({
-  //       title: "Error!",
-  //       text: error || "Something went wrong",
-  //       icon: "error",
-  //       timerProgressBar: true,
-  //       showConfirmButton: true,
-  //       confirmButtonColor: "#3699FF",
-  //     });
-  //     document.getElementById("images").value = "";
-  //   }
-  // };
+  const onDelete = async () => {
+    try {
+      await remove(ref(realtimedb, `videos/${deleteOpen.id}`));
+      setVideos(videos.filter(v => v.id !== deleteOpen.id))
+      setDeleteOpen(null)
+    } catch (error) {
+      Swal.fire({
+        text: error?.message || "Something Went wrong",
+        icon: "error",
+        title: "Error",
+        timerProgressBar: true,
+        showConfirmButton: true,
+        confirmButtonColor: "#3699FF",
+      });
+    }
+  }
 
-  const onSubmit = async (values) => {
-    console.log('values', values)
+
+  const onSubmit = async (values: any) => {
     try {
       await push(dbref(realtimedb, "videos/"), {
         ...values,
@@ -181,7 +102,6 @@ export default function TrainingMaterials() {
       setVideos([values, ...videos]);
       setOpen(false)
     } catch (error) {
-      console.log('erere', error)
       Swal.fire({
         title: "Error!",
         text: error || "Something went wrong",
@@ -192,7 +112,6 @@ export default function TrainingMaterials() {
       });
     }
   };
-  console.log('setVideos', videos)
 
   return (
     <>
@@ -211,19 +130,7 @@ export default function TrainingMaterials() {
                   >
                     Add Video{" "}
                   </Button>
-                  {/* <input
-                id="images"
-                name="images"
-                type="file"
-                multiple={false}
-                onChange={upload}
-                style={{ display: "none" }}
-              />
-                <label className="lbl"
-                  style={{ pointerEvents: uploading ? 'none' : 'unset' }}
-                  htmlFor="images">
-                  {uploading ? <CircularProgress className="" size={30} color='primary' /> : "Upload video"}
-                </label> */}
+
                 </>
               ) : null}
             </div>
@@ -235,9 +142,15 @@ export default function TrainingMaterials() {
                     sx={{
                       display: "flex",
                       flexDirection: "column",
-                      pb: "20px",
+                      pb: "20px", position: 'relative'
                     }}
                   >
+                    <IconButton className="pos" style={{
+                      position: 'absolute',
+                      right: 10, top: 10, color: 'white'
+                    }} onClick={() => setDeleteOpen(v)}>
+                      <DeleteIcon />
+                    </IconButton>
                     <CardMedia
                       component='img'
                       image={v.image}
@@ -262,7 +175,7 @@ export default function TrainingMaterials() {
                         variant="extended"
                         size="small"
                         color="primary"
-                        onClick={() => setshow(v)}
+                        onClick={() => setshow(v.video)}
                         aria-label="add"
                       >
                         Watch Video
@@ -306,6 +219,31 @@ export default function TrainingMaterials() {
           document.getElementById("video").value = "";
         }}
       />
+
+
+
+
+
+
+
+
+      <Dialog open={deleteOpen?.video} onClose={() => setDeleteOpen(null)} fullWidth>
+        <DialogTitle>Delete video</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this video?
+
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setDeleteOpen(null)
+            }}
+          >
+            Cancel
+          </Button>
+          <Button onClick={onDelete}>Delete</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

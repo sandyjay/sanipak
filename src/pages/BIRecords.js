@@ -21,7 +21,7 @@ import { useStore } from "../store.js";
 
 export default function BIRecords() {
   const [show, setShow] = useState(false);
-  const [{ user }, dispatch] = useStore()
+  const [{ user }] = useStore()
   const [editRow, setEditRow] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -31,7 +31,6 @@ export default function BIRecords() {
     try {
       let featuresRef = null;
       if (user.isAdmin) {
-        console.log('iasadmin')
         featuresRef = query(ref(realtimedb, 'records'))
       }
       else {
@@ -63,7 +62,6 @@ export default function BIRecords() {
   React.useEffect(() => {
     fetchHandler()
   }, [])
-
 
   const onDelete = async ids => {
     setUpdating(true)
@@ -123,7 +121,7 @@ export default function BIRecords() {
         timein: moment(values.timein).format(),
         timeout: moment(values.timeout).format()
       });
-      const i = arr.findIndex(val => val.id == values.id)
+      const i = arr.findIndex(val => val.id === values.id)
       arr[i] = values
       setRecords(arr)
     } catch (error) {

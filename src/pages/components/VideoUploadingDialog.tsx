@@ -5,7 +5,6 @@ import Swal from "sweetalert2";
 import {
     getDownloadURL,
     getStorage,
-    listAll,
     ref,
     uploadBytesResumable,
 } from "firebase/storage";
@@ -16,23 +15,10 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    FormControlLabel,
-    Radio,
-    RadioGroup,
     Stack,
     TextField,
 } from "@mui/material";
-import {
-    ref as dbref,
-    get,
-    query,
-    orderByChild,
-    equalTo,
-    limitToFirst,
-    push,
-} from "firebase/database";
-import { realtimedb } from "../../db";
-import { useStore } from "../../store";
+
 import { app } from "../s";
 
 const storage = getStorage(app);
@@ -51,9 +37,7 @@ function VideoUploadingDialog({ open, onClose, loading, onSubmit }) {
     const [names, setNames] = useState({
         image: '', video: ''
     });
-    const [percent, setPercent] = React.useState("");
 
-    // const [{ user }] = useStore();
 
     const [uploading, setUploading] = useState('');
 
@@ -82,10 +66,9 @@ function VideoUploadingDialog({ open, onClose, loading, onSubmit }) {
             uploadTask.on(
                 "state_changed",
                 (snapshot) => {
-                    const percnt = Math.round(
-                        (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                    );
-                    setPercent(percnt);
+                    // const percnt = Math.round(
+                    //     (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                    // );
                 },
                 (err) => {
                     setUploading('')
@@ -162,7 +145,7 @@ function VideoUploadingDialog({ open, onClose, loading, onSubmit }) {
                             style={{ pointerEvents: !!uploading ? "none" : "unset" }}
                             htmlFor="image"
                         >
-                            {uploading == 'image' ? (
+                            {uploading === 'image' ? (
                                 <CircularProgress className="" size={30} color="primary" />
                             ) : (
                                 "Upload Thumbnail"
@@ -189,7 +172,7 @@ function VideoUploadingDialog({ open, onClose, loading, onSubmit }) {
                             style={{ pointerEvents: !!uploading ? "none" : "unset" }}
                             htmlFor="video"
                         >
-                            {uploading == 'video' ? (
+                            {uploading === 'video' ? (
                                 <CircularProgress className="" size={30} color="primary" />
                             ) : (
                                 "Upload video"

@@ -34,6 +34,7 @@ const vals = {
   timein: new Date(),
   timeout: new Date(),
   passfail: "",
+  version: ""
 }
 
 const arr = [{ a: 'Date', b: 'date' },
@@ -44,6 +45,7 @@ const arr = [{ a: 'Date', b: 'date' },
 { a: 'Time in', b: 'timein' },
 { a: 'Time out', b: 'timeout' },
 { a: 'Status', b: 'passfail' },
+{ a: 'Version', b: 'version' },
 ]
 export default function AddBIRecordDialog({ open, updating, onSubmit,
   onClose,
@@ -141,6 +143,14 @@ export default function AddBIRecordDialog({ open, updating, onSubmit,
             value={inputValues.color}
             onChange={({ target: { value } }) => handleChange("color", value)}
           />
+
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Version"
+            value={inputValues.version}
+            onChange={({ target: { value } }) => handleChange("version", value)}
+          />
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DateTimePicker
               label="Time in"
@@ -168,7 +178,7 @@ export default function AddBIRecordDialog({ open, updating, onSubmit,
       <DialogActions >
         <Fade bottom collapse when={index}>
           <div className="invalid-feedback err" style={{ display: "block" }}>
-            {arr.find(v => v.b == index)?.a} is required
+            {arr.find(v => v.b === index)?.a} is required
           </div>
         </Fade>
         <Button disabled={updating} onClick={() => {

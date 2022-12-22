@@ -24,7 +24,7 @@ const ResponsiveAppBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const nav = useNavigate();
-  const [{ user }, dispatch] = useStore();
+  const [, dispatch] = useStore();
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -172,7 +172,7 @@ const ResponsiveAppBar = () => {
             >
               {settings.map((setting) => (
                 <MenuItem key={setting} onClick={() => {
-                  if (setting == 'Logout') {
+                  if (setting === 'Logout') {
                     localStorage.clear()
                     dispatch({ type: AUTH_SUCCESS, payload: { user: null } })
                   }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import logo from "../assets/logo.png";
 import Swal from 'sweetalert2'
 import { realtimedb } from "../db.js";
@@ -21,9 +21,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { AUTH_SUCCESS } from "../actionTypes";
 import {
   ref,
-  set, update, get,
-  remove, push,
-  //  orderByChild, equalTo, query,
+  push,
 } from "firebase/database";
 
 function Register() {
@@ -35,11 +33,12 @@ function Register() {
     email: '',
     password: '',
     name: '',
+    facility: '',
+    referenceId: '',
     isAdmin: false
   })
 
   const change = (e) => setInputValues({ ...inputValues, [e.target.name || e.target.id]: e.target.value })
-
   const onsubmit = async () => {
     setIsLoading(true)
     try {
@@ -123,7 +122,8 @@ function Register() {
               autoFocus
               value={inputValues.name}
               onChange={change}
-            /> <TextField
+            />
+            <TextField
               margin='normal'
               required
               fullWidth
@@ -145,6 +145,25 @@ function Register() {
               id='password'
               autoComplete='current-password'
               value={inputValues.password}
+              onChange={change}
+            />
+            <TextField
+              margin='normal'
+              required
+              fullWidth
+              name='facility'
+              label='Facility'
+              id='facility'
+              value={inputValues.facility}
+              onChange={change}
+            /> <TextField
+              margin='normal'
+              required
+              fullWidth
+              name='referenceId'
+              label='Reference Id'
+              id='referenceId'
+              value={inputValues.referenceId}
               onChange={change}
             />
             <RadioGroup
@@ -187,9 +206,8 @@ function Register() {
                 </Link>
               </Grid>
               <Grid item>
-                <Link variant='body2'>
-                  {/* target='_blank'  */}
-                  <a href="mailto:sj@m.co">Don't have an account? Request one.</a>
+                <Link variant='body2' onClick={() => navigate('/')}>
+                  Already have an account?
                 </Link>
               </Grid>
             </Grid>
